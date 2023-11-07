@@ -1,50 +1,75 @@
 ﻿try
 {
-    checked
+    OperatingProcedure1();
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex.Message);
+    Console.WriteLine("Exiting application.");
+}
+
+static void OperatingProcedure1()
+{
+    string[][] userEnteredValues = new string[][]
     {
-        int num1 = int.MaxValue;
-        int num2 = int.MaxValue;
-        int result = num1 + num2;
-        Console.WriteLine("Result: " + result);
+        new string[] { "1", "two", "3" },
+        new string[] { "0", "1", "2" }
+    };
+
+    foreach (string[] userEntries in userEnteredValues)
+    {
+        try
+        {
+            BusinessProcess1(userEntries);
+        }
+        catch (Exception ex)
+        {
+            if (ex.StackTrace.Contains("BusinessProcess1"))
+            {
+                if (ex is FormatException)
+                {
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("Corrective action taken in OperatingProcedure1");
+                }
+                else if (ex is DivideByZeroException)
+                {
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("Partial correction in OperatingProcedure1 - further action required");
+
+                    throw;
+                }
+                else
+                {
+                    throw new ApplicationException("An error occured - ", ex);
+                }
+            }
+        }
     }
 }
-catch (OverflowException ex)
-{
-    Console.WriteLine("Error: The number is too large to be represented as an integer. " + ex.Message);
-}
 
-try
+static void BusinessProcess1(string[] userEntries)
 {
-    string? str = null;
-    int length = str.Length;
-    Console.WriteLine("String Length: " + length);
-}
-catch (NullReferenceException ex)
-{
-    Console.WriteLine("Error: The reference is null. " + ex.Message);
-}
+    int valueEntered;
 
-try
-{
-    int[] numbers = new int[5];
-    numbers[5] = 10;
-    Console.WriteLine("Number at index 5: " + numbers[5]);
-}
-catch (IndexOutOfRangeException ex)
-{
-    Console.WriteLine("Error: Index out of range. " + ex.Message);
-}
+    foreach (string userValue in userEntries)
+    {
+        try
+        {
+            valueEntered = int.Parse(userValue);
 
-try
-{
-    int num3 = 10;
-    int num4 = 0;
-    int result2 = num3 / num4;
-    Console.WriteLine("Result: " + result2);
-}
-catch (DivideByZeroException ex)
-{
-    Console.WriteLine("Error: Cannot divide by zero. " + ex.Message);
-}
+            int calculatedValue = 4 / valueEntered;
 
-Console.WriteLine("Exiting program.");
+            Console.WriteLine($"{valueEntered}, {calculatedValue}");
+        }
+        catch (FormatException)
+        {
+            FormatException invalidFormatException = new FormatException("FormatException: User input values in 'BusinessProcess1' must be valid integers");
+            throw invalidFormatException;
+        }
+        catch (DivideByZeroException)
+        {
+            DivideByZeroException unexpectedDivideByZeroException = new DivideByZeroException("DivideByZeroException: Calculation in 'BusinessProcess1' encountered an unexpected divide by zero");
+            throw unexpectedDivideByZeroException;
+        }
+    }
+}
